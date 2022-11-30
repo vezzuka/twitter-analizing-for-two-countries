@@ -1,5 +1,0 @@
-id,hashtags,replyCount,replyCount,retweetCount,retweetCount,likeCount,likeCount
-count,nunique,sum,mean,sum,mean,sum,mean
-358,29,675.0,1.89,146175.0,408.31,1006243.0,2810.73
-147,22,40177.0,273.31,101383.0,689.68,996174.0,6776.69
-155,20,57212.0,369.11,148076.0,955.33,1434594.0,9255.45
