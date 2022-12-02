@@ -39,20 +39,20 @@ tweets_agg.columns = ['Users_Analysed', 'Total_Tweets',
 
 tweets_agg.reset_index(inplace=True)
 
-# Create a df aggreagting by sourceLabel for pie chart
-source_dict = {'Twitter for iPhone': 'Iphone',
-               'Twitter for iPad': 'Other',
-               'Twitter for Android': 'Android',
-               'Twitter for Mac': 'Other',
-               'Twitter Web App': 'Web App',
-               'Twitter Media Studio': 'Media Studio',
-               'Twitter Media Studio - LiveCut': 'Media Studio',
-               'The White House': 'The White House',
-               'TweetDeck': 'Other',
-               'Periscope': 'Periscope',
-               'Arrow.': 'Other'}
+# Create a df aggregating by sourceLabel for pie chart
+source_dict_pie = {'Twitter for iPhone': 'Iphone',
+                   'Twitter for iPad': 'iPad',
+                   'Twitter for Android': 'Android',
+                   'Twitter for Mac': 'Other',
+                   'Twitter Web App': 'Web App',
+                   'Twitter Media Studio': 'Media Studio',
+                   'Twitter Media Studio - LiveCut': 'Media Studio',
+                   'The White House': 'The White House',
+                   'TweetDeck': 'Other',
+                   'Periscope': 'Periscope',
+                   'Arrow.': 'Other'}
 
-tweets_source_pie = tweets_clean.replace(source_dict).groupby('sourceLabel').agg({'id': 'count'}).reset_index()
+tweets_source_pie = tweets_clean.replace(source_dict_pie).groupby('sourceLabel').agg({'id': 'count'}).reset_index()
 tweets_source_pie.rename({'id': 'Tweets'}, axis=1, inplace=True)
 
 # Create a df aggregating by sourceLabel AND category
@@ -71,6 +71,17 @@ source_dict = {'Twitter for iPhone': 'Iphone',
 tweets_cns = tweets_clean.replace(source_dict).groupby(['category', 'sourceLabel']).agg({'id': 'count' }).reset_index()
 tweets_cns.rename({'sourceLabel': 'Device', 'id': 'Tweets'}, axis=1, inplace=True)
 cns_df = tweets_cns.fillna(0)
+
+# Create a df aggregating by sourceLabel AND name
+tweets_name = tweets_clean.replace(source_dict_pie).groupby(['name']).agg({'id': 'count' }).reset_index()
+tweets_name.rename({'id': 'Total'}, axis=1, inplace=True)
+
+tweets_nns = tweets_clean.replace(source_dict_pie).groupby(['name', 'sourceLabel']).agg({'id': 'count' }).reset_index()
+tweets_nns.rename({'sourceLabel': 'Device', 'id': 'Tweets'}, axis=1, inplace=True)
+nns_df = tweets_nns.fillna(0)
+
+platform_usage = tweets_nns.merge(tweets_name, on='name', how='left')
+platform_usage['percent'] = round(platform_usage['Tweets']/platform_usage['Total']*100, 1)
 
 # Pie Chart - Device Distribution
 cat_plat = go.Figure(go.Pie(labels=tweets_source_pie['sourceLabel'], values=tweets_source_pie['Tweets']))
@@ -119,6 +130,35 @@ cat_tweets.update_layout(title="Total Tweets by Category",
                                    color="RoyalBlue")
                         )
 
+# Scatter plot usage percent by name
+name_platform_p = px.scatter(platform_usage,
+                             y = 'Device',
+                             x = 'name',
+                             color = 'Device',
+                             custom_data = ['percent'],
+                             size='percent'
+                             )
+
+name_platform_p.update_traces(hovertemplate='<extra></extra>'+
+                                            '%{y}:  %{customdata[0]}',
+                              textfont_size=11
+                              )
+
+name_platform_p.update_layout(yaxis_title = 'Tweets',
+                              width = 1200, height = 800,
+                              title="Tweets by Twitter Platform",
+                              title_font_size = 22,
+                              title_x = 0.5,
+                              title_xanchor = 'center',
+                              xaxis_title="User",
+                              legend_title="Platform",
+                              hovermode='x unified',
+                              font=dict(family="Comic, monospace",
+                                        size=14,
+                                        color="RoyalBlue")
+                              )
+
+
 # Paste here data frames or plots
 
 # Set Streamlit title and header
@@ -126,17 +166,27 @@ st.set_page_config(page_title='Twitter Analysis 2022',
                    page_icon='random',
                    layout='wide') # 'wide' or 'centered'
 
-st.title('Analysis of tweeting behaviour and engagement from high profile users in 2022')
+st.title('Tweeting behaviour and engagement from top users in 2022')
 
-tab1, tab2, tab3 = st.tabs(['Category Analysis', 'User Analysis', 'Time Series'])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(['Intro', 'Category Analysis', 'User Analysis', 'Time Series', 'Executive Summary'])
 
 with tab1:
-   st.header("A cat")
-   st.image("https://static.streamlit.io/examples/cat.jpg", width=200)
-   st.plotly_chart(cat_plat)
-   st.plotly_chart(cat_tweets)
+    st.text('Intro:')
 
 with tab2:
+   #st.header("A cat")
+   with st.container():
+       col1, col2 = st.columns(2)
+
+       with col1:
+           st.plotly_chart(cat_plat, width=200)
+       with col2:
+           st.plotly_chart(cat_tweets)
+
+   with st.container():
+       st.plotly_chart(name_platform_p)
+
+with tab3:
    st.header("A dog")
    st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
 
@@ -148,6 +198,6 @@ with tab2:
    else:
        st.write('Elon Musk or Harry Potter')
 
-with tab3:
+with tab4:
    st.header("An owl")
    st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
