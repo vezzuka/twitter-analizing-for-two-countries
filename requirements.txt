@@ -4,6 +4,6 @@ plotly
 matplotlib
 nltk
 regex
-re
+seaborn
 pylab
 wordcount
