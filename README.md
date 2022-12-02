@@ -1,11 +1,7 @@
 # Twitter Analysis - High Profile Accounts
 
-## Introduction
 
-
-## Acknowledgements
-
-#### -- Project Status: [Work In Progress]
+## Project Status: [Work In Progress]
 
 ## Project Intro/Objective
 
@@ -55,7 +51,6 @@ Authors: [Steven Bird](https://orcid.org/0000-0003-3782-7733), [Ewan Klein](http
 Title: Natural Language Processing with Python: Analyzing Text with the Natural Language Toolkit
 Year: 2009Publisher: O'Reilly Media, Inc.
 URL: https://github.com/nltk/nltk
-
 
 ## Contributing Members
 

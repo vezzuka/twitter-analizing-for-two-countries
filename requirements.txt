@@ -2,10 +2,8 @@ streamlit
 pandas
 plotly
 matplotlib
-seaborn
 nltk
 regex
 re
 pylab
 wordcount
-
