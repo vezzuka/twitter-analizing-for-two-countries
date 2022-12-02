@@ -168,10 +168,58 @@ st.set_page_config(page_title='Twitter Analysis 2022',
 
 st.title('Tweeting behaviour and engagement from top users in 2022')
 
+
 tab1, tab2, tab3, tab4, tab5 = st.tabs(['Intro', 'Category Analysis', 'User Analysis', 'Time Series', 'Executive Summary'])
 
 with tab1:
-    st.text('Intro:')
+    with st.container():
+        st.header('Scope')
+        st.text('We analysed the tweeting behaviour and the engagement created from 19 top users, selected from 3 different categories shown below\n'
+                '\n'                
+                'We wanted to get some insights on which users and categories are more active and get more engagement, which keywords they use and \n'
+                'how did these patterns changed throughout the year\n\n')
+    with st.container():
+        st.header('Categories')
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.subheader('Tech CEOs')
+            st.text('Elon Musk (Technoking)\n'
+                    'Mark Zuckerberg (CEO Meta)\n'
+                    'Tim Cook (CEO Apple)\n'
+                    'Sundar Pichai (CEO Alphabet)\n'
+                    'Satya Nadella (CEO Microsoft)\n'
+                    'Jeff Bezos (former CEO Amazon)\n'
+                    'Bill Gates (former CEO Microsoft)\n'
+                    )
+            with col2:
+                st.subheader('Politicians')
+                st.text('Joe Biden (President of US)\n'
+                        'Narenda Modi(PM of India)\n'
+                        'Barack Obama (former President of US)\n'
+                        'Volodymyr Zelenskyy (President of Ukraine)\n'
+                        'Ron DeSantis (Governor of Florida)\n'
+                        'Alexandria Ocasio-Cortez (NY Representative)\n'
+                        )
+            with col3:
+                st.subheader('Celebrities')
+                st.text('Justin Bieber (Musician)\n'
+                        'Katy Perry (Musician)\n'
+                        'Rihanna (Musician)\n'
+                        'Lady Gaga(Musician and actress)\n'
+                        'Ellen DeGeneres (Comedian and TV Host)\n'
+                        'Kim Kardashian (Socialite)\n'
+                        )
+            with st.container():
+                st.header('Analysis')
+                st.markdown('''We calculated the following metrics for the analysis:
+                                - Total Tweets by Category and Platform 
+                                - Interactions (Likes, Retweets, Replies and Quotes) by Category
+                                - Platform usage distribution by user
+                                - Celebrity Twitter Behaviour with Wordclouds
+                                - Time Series for Interactions metrics, including Likes to Replies and Likes Ratio
+                                ''')
+
+        st.text('We selected total and mean Likes, Retweets, Quotes and Replies as well as the Likes to Replies and likes to Retweets')
 
 with tab2:
    #st.header("A cat")
