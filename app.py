@@ -395,32 +395,29 @@ with tab4:
     df_group.columns = df_group.columns.droplevel(0)
     df_group.columns = ["number_tweets", "likecount_sum"]
 
+    fig,bar_celeb = plt.subplots()
     bar_celeb = so.plot.bar()
-    plt.yscale('log', base=2)
+    plt.yscale('log')#, base=2)
 
     plt.style.use('seaborn-whitegrid')
-    scatter_celeb=plt.figure()
+    scatter_celeb, ax = plt.subplots()
     sns.scatterplot(x="retweetCount",
-                       y="likeCount",
-                       hue="name",
-                       data=s_pol)
-    plt.ylim(0, 200000)
-    plt.xlim(0, 20000)
-
-    so.plot.bar()
-    plt.yscale('log', base=2)
-
+                    y="likeCount",
+                    hue="name",
+                    data=s_pol)
+    ax.set_ylim(0, 200000)
+    ax.set_xlim(0, 20000)
 
     with st.container():
        col1, col2 = st.columns(2)
 
        with col1:
            st.text('Work in Progress')
-           #st.pyplot(bar_celeb, width=200)
+           st.pyplot(bar_celeb.figure)
 
        with col2:
            st.text('Work in Progress')
-           #st.pyplot(scatter_celeb)
+           st.pyplot(scatter_celeb)
 
 with tab5:
    
