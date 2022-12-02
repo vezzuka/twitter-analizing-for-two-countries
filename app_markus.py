@@ -131,6 +131,7 @@ cat_tweets.update_layout(title="Total Tweets by Category",
                                    size=14,
                                    color="RoyalBlue")
                         )
+cat_tweets.show()
 
 # Paste here data frames or plots
 
@@ -146,10 +147,10 @@ tab1, tab2, tab3 = st.tabs(['Category Analysis', 'User Analysis', 'Time Series']
 with tab1:
    st.header("A cat")
    st.image("https://static.streamlit.io/examples/cat.jpg", width=200)
-   st.plotly_chart(cat_plat)
-   st.plotly_chart(cat_tweets)
+   #st.plotly_chart(cat_plat)
+   #st.plotly_chart(cat_tweets)
 
-with tab2:
+with tab3:
    st.header("A dog")
    st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
 
@@ -158,6 +159,7 @@ with tab2:
                    # ('Bill Gates', 'Elon Musk', 'Harry Potter'))
    stop_words = set(stopwords.words('english'))
    stop_words = (list(stop_words)) + [" ", "based", "regarding", "good", "right", "even", "", "thank", "Thank", "https"]
+
 
    wordcloud_dic = {}
 
@@ -208,20 +210,60 @@ with tab2:
 
        wordcloud_dic[celebs[i]] = wordcloud
 
-   # index=celebs.index(celeb)
+#print(wordcloud_dic[celebs["Elon Musk"]])
+# index=celebs.index(celeb)
 
-   fig2 = plt.figure(figsize=(8, 8), facecolor=None)
-   plt.imshow(wordcloud_dic[celeb])
-   plt.axis("off")
-   plt.tight_layout(pad=0)
-   plt.title(celeb + ' Tweetcloud')
+   if celeb:
 
-   st.pyplot(fig2)
+       fig2 = plt.figure(figsize=(8, 8), facecolor=None)
+       plt.imshow(wordcloud_dic[celeb])
+       plt.axis("off")
+       plt.tight_layout(pad=0)
+       plt.title(celeb + ' Tweetcloud')
+       st.pyplot(fig2)
 
-   '''if celeb == 'Bill Gates':
-       st.write(celeb)
-   else:
-       st.write('Elon Musk or Harry Potter')'''
+
+
+   df_test = df1[["name", "likeCount", ]]
+   s = df_test.groupby('name').likeCount.sum()
+   so = s.sort_values(ascending=False)
+   s_pol = df1.query(
+       'name == "Joe Biden" or  name == "Barack Obama" or name == "Ron DeSantis" or name == "Alexandra Ocaso-Cortez" or name == "Narendra Modi"')
+
+   df_group = df_test.groupby('name').agg({"likeCount": ["nunique", "sum"]})
+   df_group.columns = df_group.columns.droplevel(0)
+   df_group.columns = ["number_tweets", "likecount_sum"]
+
+   bar_celeb = so.plot.bar()
+   plt.yscale('log', base=2)
+
+   #plt.show()
+
+   plt.style.use('seaborn-whitegrid')
+   scatter_celeb=plt.figure()
+   sns.scatterplot(x="retweetCount",
+                   y="likeCount",
+                   hue="name",
+                   data=s_pol)
+   plt.ylim(0, 200000)
+   plt.xlim(0, 20000)
+
+   so.plot.bar()
+   plt.yscale('log', base=2)
+
+   #plt.show()
+   # Number of Likes by Celebrity
+
+with tab2:
+   # st.header("A cat")
+   with st.container():
+       col1, col2 = st.columns(2)
+
+       with col1:
+           st.pyplot(bar_celeb, width=200)
+       with col2:
+           st.pyplot(scatter_celeb)
+
 
 with tab3:
    st.header("An owl")
