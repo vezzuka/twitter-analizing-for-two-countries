@@ -1,8 +1,8 @@
+numpy
 streamlit
 pandas
 plotly
 matplotlib
-numpy
 nltk
 regex
 seaborn
