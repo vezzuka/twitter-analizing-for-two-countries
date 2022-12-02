@@ -13,7 +13,18 @@ import plotly.graph_objects as go
 
 import datetime as dt
 import plotly.io as pio
-#import matplotlib.plotly as plt
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+from nltk.corpus import stopwords
+from wordcloud import WordCloud, STOPWORDS
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
+nltk.download('punkt')
+nltk.download('stopwords')
+import re
+import pylab
+
 
 @st.cache
 def load_data(path):
@@ -231,8 +242,6 @@ cat_platform.update_layout(yaxis_title = 'Tweets',
                                    color="RoyalBlue")
                         )
 
-# Paste here data frames or plots
-
 # Set Streamlit title and header
 st.set_page_config(page_title='Twitter Analysis 2022',
                    page_icon='random',
@@ -241,7 +250,7 @@ st.set_page_config(page_title='Twitter Analysis 2022',
 st.title('Tweeting behaviour and engagement from top users in 2022')
 
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(['Intro', 'Tweets by Category and Platform', 'Engagement by Category', 'User Analysis', 'Time Series', 'Executive Summary'])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(['Intro', 'Tweets by Category and Platform', 'Engagement by Category and Platform Usage', 'Wordclouds', 'Time Series', 'Executive Summary'])
 
 with tab1:
     with st.container():
@@ -305,11 +314,113 @@ with tab2:
 with tab3:
     with st.container():
         st.plotly_chart(cat_interactions)
+    with st.container():
+        st.plotly_chart(name_platform_p)
 
 with tab4:
-   st.header("A dog")
-   with st.container():
-       st.plotly_chart(name_platform_p)
+    # Markus code
+    celebs = list(df1["name"].unique())
+    celeb = st.selectbox("Select the twitter user", celebs)
+                   # ('Bill Gates', 'Elon Musk', 'Harry Potter'))
+    stop_words = set(stopwords.words('english'))
+    stop_words = (list(stop_words)) + [" ", "based", "regarding", "good", "right", "even", "", "thank", "Thank", "https"]
+
+
+    wordcloud_dic = {}
+
+    # Setting stop words
+
+    for i in range(len(celebs)):
+       # selecting the celbrity
+
+       df = df1[df1['name'] == celebs[i]]
+       # saving the Tweet-content in a string variable
+       x = str(df["content"])
+       token = word_tokenize(x)
+
+       # using regex to only select alphanumeric
+       l = []
+       for j in range(len(token)):
+           l.append(re.sub(r'\W+', '', token[j]))
+
+       # getting rid of stop words
+       filtered = []
+       for w in l:
+           if w.lower() not in stop_words:
+               filtered.append(w)
+
+       # creating dic to count number of words
+       word_dic = {}
+       for m in filtered:
+           if m in word_dic:
+               word_dic[m] += 1
+           else:
+               word_dic[m] = 1
+
+       s = {k: v for k, v in sorted(word_dic.items(), key=lambda item: item[1], reverse=True)}
+
+       # Wordcloud
+       comment_words = ''
+       stop_words2 = list(STOPWORDS)
+
+       # putting list back into a string
+       token_2 = (" ".join(s))
+
+       wordcloud = WordCloud(width=600, height=600,
+                             background_color='white',
+                             stopwords=stop_words2,
+                             max_words=100,
+                             min_word_length=3,
+                             min_font_size=10).generate(token_2)
+
+       wordcloud_dic[celebs[i]] = wordcloud
+
+    if celeb:
+       fig2 = plt.figure(figsize=(8, 8), facecolor=None)
+       plt.imshow(wordcloud_dic[celeb])
+       plt.axis("off")
+       plt.tight_layout(pad=0)
+       plt.title(celeb + ' Tweetcloud')
+       st.pyplot(fig2)
+
+
+
+    df_test = df1[["name", "likeCount", ]]
+    s = df_test.groupby('name').likeCount.sum()
+    so = s.sort_values(ascending=False)
+    s_pol = df1.query(
+       'name == "Joe Biden" or  name == "Barack Obama" or name == "Ron DeSantis" or name == "Alexandra Ocaso-Cortez" or name == "Narendra Modi"')
+
+    df_group = df_test.groupby('name').agg({"likeCount": ["nunique", "sum"]})
+    df_group.columns = df_group.columns.droplevel(0)
+    df_group.columns = ["number_tweets", "likecount_sum"]
+
+    bar_celeb = so.plot.bar()
+    plt.yscale('log', base=2)
+
+    plt.style.use('seaborn-whitegrid')
+    scatter_celeb=plt.figure()
+    sns.scatterplot(x="retweetCount",
+                       y="likeCount",
+                       hue="name",
+                       data=s_pol)
+    plt.ylim(0, 200000)
+    plt.xlim(0, 20000)
+
+    so.plot.bar()
+    plt.yscale('log', base=2)
+
+
+    with st.container():
+       col1, col2 = st.columns(2)
+
+       with col1:
+           st.text('Work in Progress')
+           #st.pyplot(bar_celeb, width=200)
+
+       with col2:
+           st.text('Work in Progress')
+           #st.pyplot(scatter_celeb)
 
 with tab5:
    
@@ -559,3 +670,8 @@ with tab5:
        st.plotly_chart(fig4_tab3)
    with tab5:
        st.plotly_chart(fig5_tab3)
+
+with tab6:
+    st.text('Work in Progress')
+    st.write('[Tweet with more likes](https://twitter.com/elonmusk/status/1519480761749016577?lang=en)')
+    st.write('[Github Repo](https://github.com/vezzuka/twitter-analyzing-for-two-countries)')
