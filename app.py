@@ -146,7 +146,7 @@ name_platform_p.update_traces(hovertemplate='<extra></extra>'+
 
 name_platform_p.update_layout(yaxis_title = 'Tweets',
                               width = 1200, height = 800,
-                              title="Tweets by Twitter Platform",
+                              title="Usage of Twitter Platforms, % from user total tweets",
                               title_font_size = 22,
                               title_x = 0.5,
                               title_xanchor = 'center',
@@ -158,6 +158,75 @@ name_platform_p.update_layout(yaxis_title = 'Tweets',
                                         color="RoyalBlue")
                               )
 
+# Bar charts: Interactions
+# Create subplot grid
+cat_interactions = make_subplots(rows=1, cols=2, subplot_titles=("Total Interactions", "Interactions/Tweet"))
+
+# Add traces top left
+actions = ['Replies', 'Retweets', 'Likes', 'Quotes']
+colors = ['#FD3216', '#6A76FC', '#FBE426', '#FF9616']  # '#F6F926']
+aggregators = ['Total', 'Mean']
+
+for c, action in enumerate(actions):
+    for i, agg in enumerate(aggregators):
+        y_str = f'{agg}_{action}'
+        cat_interactions.add_trace(go.Bar(name=action,
+                                          x=tweets_agg['category'],
+                                          y=tweets_agg[y_str],
+                                          marker_color=colors[c]), row=1, col=i + 1)
+        cat_interactions.update_traces(  # hovertemplate='<extra></extra>'+
+            # '%{x}<br>'+
+            # '<br>{action}:  %{y}',
+            textfont_size=11,
+            # title_xaxis="Category",
+            # marker=dict(colors=['gold', 'mediumturquoise',  'lightgreen'],
+            # line=dict(color='#000000', width=1))
+        )
+
+cat_interactions.update_layout(barmode='stack',
+                               width=1400,
+                               height=500,
+                               title="Total Twitter Interactions",
+                               title_font_size=22,
+                               title_x=0.5,
+                               title_xanchor='center',
+                               xaxis_title="Category",
+                               legend_title="Interaction Type",
+                               hovermode='x unified',
+                               font=dict(family="Comic, monospace",
+                                         size=14,
+                                         color="RoyalBlue")
+                               )
+
+# Bar charts: Platform usage
+cat_platform = px.bar(cns_df,
+                    x = 'category',
+                    y = 'Tweets',
+                    color = 'Device',
+                    custom_data = ['Device'],
+                    barmode = 'stack')
+
+cat_platform.update_traces(hovertemplate='<extra></extra>'+
+                                       '%{customdata[0]}:  %{y}',
+                                       textfont_size=11,
+                                       #title_xaxis="Category",
+                              #marker=dict(colors=['gold', 'mediumturquoise',  'lightgreen'],
+                                          #line=dict(color='#000000', width=1))
+                             )
+
+cat_platform.update_layout(yaxis_title = 'Tweets',
+                         width = 800, height = 500,
+                         title="Tweets by Platform",
+                         title_font_size = 22,
+                         title_x = 0.5,
+                         title_xanchor = 'center',
+                         xaxis_title="Category",
+                         legend_title="Device",
+                         hovermode='x unified',
+                         font=dict(family="Comic, monospace",
+                                   size=14,
+                                   color="RoyalBlue")
+                        )
 
 # Paste here data frames or plots
 
@@ -169,7 +238,7 @@ st.set_page_config(page_title='Twitter Analysis 2022',
 st.title('Tweeting behaviour and engagement from top users in 2022')
 
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(['Intro', 'Category Analysis', 'User Analysis', 'Time Series', 'Executive Summary'])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(['Intro', 'Tweets by Category and Platform', 'Engagement by Category', 'User Analysis', 'Time Series', 'Executive Summary'])
 
 with tab1:
     with st.container():
@@ -177,9 +246,9 @@ with tab1:
         st.text('We analysed the tweeting behaviour and the engagement created from 19 top users, selected from 3 different categories shown below\n'
                 '\n'                
                 'We wanted to get some insights on which users and categories are more active and get more engagement, which keywords they use and \n'
-                'how did these patterns changed throughout the year\n\n')
+                'how did these patterns changed throughout the year.\n\n')
     with st.container():
-        st.header('Categories')
+        st.header('Users by Categories')
         col1, col2, col3 = st.columns(3)
         with col1:
             st.subheader('Tech CEOs')
@@ -191,35 +260,32 @@ with tab1:
                     'Jeff Bezos (former CEO Amazon)\n'
                     'Bill Gates (former CEO Microsoft)\n'
                     )
-            with col2:
-                st.subheader('Politicians')
-                st.text('Joe Biden (President of US)\n'
-                        'Narenda Modi(PM of India)\n'
-                        'Barack Obama (former President of US)\n'
-                        'Volodymyr Zelenskyy (President of Ukraine)\n'
-                        'Ron DeSantis (Governor of Florida)\n'
-                        'Alexandria Ocasio-Cortez (NY Representative)\n'
-                        )
-            with col3:
-                st.subheader('Celebrities')
-                st.text('Justin Bieber (Musician)\n'
-                        'Katy Perry (Musician)\n'
-                        'Rihanna (Musician)\n'
-                        'Lady Gaga(Musician and actress)\n'
-                        'Ellen DeGeneres (Comedian and TV Host)\n'
-                        'Kim Kardashian (Socialite)\n'
-                        )
-            with st.container():
-                st.header('Analysis')
-                st.markdown('''We calculated the following metrics for the analysis:
-                                - Total Tweets by Category and Platform 
-                                - Interactions (Likes, Retweets, Replies and Quotes) by Category
-                                - Platform usage distribution by user
-                                - Celebrity Twitter Behaviour with Wordclouds
-                                - Time Series for Interactions metrics, including Likes to Replies and Likes Ratio
-                                ''')
-
-        st.text('We selected total and mean Likes, Retweets, Quotes and Replies as well as the Likes to Replies and likes to Retweets')
+        with col2:
+            st.subheader('Politicians')
+            st.text('Joe Biden (President of US)\n'
+                    'Narenda Modi(PM of India)\n'
+                    'Barack Obama (former President of US)\n'
+                    'Volodymyr Zelenskyy (President of Ukraine)\n'
+                    'Ron DeSantis (Governor of Florida)\n'
+                    'Alexandria Ocasio-Cortez (NY Representative)\n'
+                    )
+        with col3:
+            st.subheader('Celebrities')
+            st.text('Justin Bieber (Musician)\n'
+                    'Katy Perry (Musician)\n'
+                    'Rihanna (Musician)\n'
+                    'Lady Gaga(Musician and actress)\n'
+                    'Ellen DeGeneres (Comedian and TV Host)\n'
+                    'Kim Kardashian (Socialite)\n'
+                    )
+        with st.container():
+            st.header('Analysis')
+            st.text('We calculated the following metrics for a total of 15.4k Tweets between January 1st and November 30th 2022:\n\n'
+                    '- Total Tweets by Category and Platform\n'
+                    '- Interactions (Likes, Retweets, Replies and Quotes) by Category\n'
+                    '- User Analysis: Wordclouds, Behaviour and Platform usage\n'
+                    '- Time Series for Interactions metrics, including Likes to Replies and Likes Ratio'
+                    )
 
 with tab2:
    #st.header("A cat")
@@ -227,25 +293,21 @@ with tab2:
        col1, col2 = st.columns(2)
 
        with col1:
-           st.plotly_chart(cat_plat, width=200)
+           st.plotly_chart(cat_plat)
        with col2:
            st.plotly_chart(cat_tweets)
+   with st.container():
+       st.plotly_chart(cat_platform)
 
+with tab3:
+    with st.container():
+        st.plotly_chart(cat_interactions)
+
+with tab4:
+   st.header("A dog")
    with st.container():
        st.plotly_chart(name_platform_p)
 
-with tab3:
-   st.header("A dog")
-   st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
-
-   genre = st.radio("Select the twitter user",
-                    ('Bill Gates', 'Elon Musk', 'Harry Potter'))
-
-   if genre == 'Bill Gates':
-       st.write(genre)
-   else:
-       st.write('Elon Musk or Harry Potter')
-
-with tab4:
+with tab5:
    st.header("An owl")
    st.image("https://static.streamlit.io/examples/owl.jpg", width=200)

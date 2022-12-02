@@ -5,13 +5,11 @@
 
 ## Acknowledgements
 
-#### -- Project Status: [ Completed]
+#### -- Project Status: [Work In Progress]
 
 ## Project Intro/Objective
 
-This project will analyse some high profile accounts in Twitter accross different categories. Scope will be all tweets from January 2022 until end of November 2022.
-
-The main task is ...
+This project will analyse some high profile accounts in Twitter accross different categories and Twitter platforms.
 
 
 ### Partners
@@ -23,12 +21,16 @@ Elizabeta Iakimenko * Markus von der Lühe * Agustin Rojo
 * Data Scraping
 * Exploratory Data Analysis 
 * Data Visualization
+* Wordcloud Analysis
+* Dashboard Deployment
 
 ### Technologies
 
 * Python, snscrape
 * Pandas, jupyter
-* Matplotlib, Plotly, Streamlit
+* Matplotlib, Plotly, Seaborn
+* nltk
+* Streamlit
 
 
 ## Getting Started
@@ -41,12 +43,18 @@ Elizabeta Iakimenko * Markus von der Lühe * Agustin Rojo
 
 ## Acknowledgements
 
-### Snscrape
+### Social Network Scrape (Snscrape)
 Author: JustAnotherArchivist
 Title: snscrape: A social networking service scraper
 URL: https://github.com/JustAnotherArchivist/snscrape
 Version: 0.4.3.20220106
 Date: 2018‒2022
+
+### Natural Language ToolKit (nltk)
+Authors: [Steven Bird](https://orcid.org/0000-0003-3782-7733), [Ewan Klein](https://orcid.org/0000-0002-0520-8447), Edward Loper
+Title: Natural Language Processing with Python: Analyzing Text with the Natural Language Toolkit
+Year: 2009Publisher: O'Reilly Media, Inc.
+URL: https://github.com/nltk/nltk
 
 
 ## Contributing Members
